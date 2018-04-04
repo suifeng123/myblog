@@ -9,7 +9,7 @@ const checkNotLogin = require('../middlewares/check').checkNotLogin;
 
 //GET /signup ×¢²áÒ³
 router.get('/',function(req,res,next){
-    res.send('this is signup page GET Method');
+    res.render('signup');
 });
 
 //POST /signup ×¢²áÒ³
