@@ -21,42 +21,49 @@ router.get('/',function(req,res,next){
 
 //POST /signup 注册页
 router.post('/',checkNotLogin,function(req,res,next){
-    const name = req.fields.name;
-    const gender = req.fields.gender;
-    const bio = req.fields.bio;
+    var name = req.fields.name;
+    var gender = req.fields.gender;
+    var  bio = req.fields.bio;
     console.log("11111");
 
-    console.log(req.fields.avatar);
-    const avatar = req.fields.avatar.path.split(path.sep).pop();
+   // console.log(req.fields.avatar);
+    var avatar = req.files.avatar.path.split(path.sep).pop();
     console.log('222');
-    let password = req.fields.password;
-    const repassword = req.fields.repassword;
+    var  password = req.fields.password;
+    var  repassword = req.fields.repassword;
 
     //进行校验参数
     try{
         if(!(name.length >= 1 && name.length <= 10)){
-            throw new Error('姓名请限制在1-10个字符')
+            throw new Error('Please limit the name to 1-10 characters')
         }
 
         if(['m','f','x'].indexOf(gender) === -1){
-            throw new Error('性别只能在 m、f 或者 x')
+            throw new Error('Gender limited to  m、f or x')
         }
 
         if(!(bio.length >= 1 && bio.length <= 30)){
-        	throw new Error('个人简历请限制在1-30个字符')
+        	throw new Error('In the personal home,please limit it to 1-30 characters')
         }
 
         if(!req.files.avatar.name){
-        	throw new Error('密码至少6个字符')
+        	throw new Error('Lack of a head image')
+        }
+
+        if(password.length < 6){
+            throw new Error('The password length is more than 6')
         }
 
         if(password !== repassword){
-        	throw new Error('两次输入密码不一致')
+        	throw new Error('Two input passwords inconsistencies')
         }
         
     }catch(e){
     	//注册失败，异步删除上传的头像
+        console.log('1111423');
     	fs.unlink(req.files.avatar.path);
+        console.log("the signup error");
+        console.log(e.message);
         req.flash('error', e.message);
         return res.redirect('/signup');
     }
@@ -65,13 +72,13 @@ router.post('/',checkNotLogin,function(req,res,next){
     password = sha1(password);
 
     //待写入数据库的用户信息
-    let User = {
+    var user = {
         name: name,
         password: password,
         gender: gender,
         bio: bio,
         avatar: avatar
-    }
+    };
 
 
 
@@ -79,26 +86,30 @@ router.post('/',checkNotLogin,function(req,res,next){
     UserModel.create(user)
         .then(function(result){
             //此user是插入mongodb后值，包含 _id
-            console.log("进行注册");
+            console.log("sing8888");
+            console.log(result);
             user = result.ops[0];
             //删除密码这种敏感信息，将信息存入session
             delete user.password;
             req.session.user = user;
             //写入flash
-            req.flash('success','注册成功');
+            console.log('9999')
+            req.flash('success','signup success');
             //跳转到首页
-            res.redirect('/posts');
+            console.log('sdfasdf')
+            return res.redirect('/posts');
         })
         .catch(function(e){
+            console.log('4444');
             //注册失败，异步删除上传的头像
             fs.unlink(req.files.avatar.path);
             //用户名被占用则跳回到注册页，而不是错误页
             if(e.message.match('duplicate key')){
-                req.flash('error','用户已被占用');
+                req.flash('error','the user is fixed');
                 return res.redirect('/signup');
             }
             next(e);
-        })
+        });
 });
 
 module.exports = router;
