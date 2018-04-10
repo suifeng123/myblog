@@ -3,15 +3,17 @@
  */
 
 
-var express = require('express'); //����һ��expressӦ��
-var router = express.Router();  //����һ��router��·��
+var express = require('express');
+var router = express.Router();
 
 
 var checkLogin = require('../middlewares/check').checkLogin;
 
 
 router.get('/',function(req,res,next){
-    res.send(req.flash());
+    //提示注册成功
+    console.log("跳转路径111");
+    res.render('posts');
 });
 
 

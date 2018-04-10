@@ -4,6 +4,8 @@
 //设计用户注册的信息
 const fs = require('fs');
 const sha1 = require('sha1');
+//关于avatar path的观点
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 
@@ -18,11 +20,15 @@ router.get('/',function(req,res,next){
 });
 
 //POST /signup 注册页
-router.post('/',function(req,res,next){
+router.post('/',checkNotLogin,function(req,res,next){
     const name = req.fields.name;
     const gender = req.fields.gender;
     const bio = req.fields.bio;
+    console.log("11111");
+
+    console.log(req.fields.avatar);
     const avatar = req.fields.avatar.path.split(path.sep).pop();
+    console.log('222');
     let password = req.fields.password;
     const repassword = req.fields.repassword;
 
@@ -73,6 +79,7 @@ router.post('/',function(req,res,next){
     UserModel.create(user)
         .then(function(result){
             //此user是插入mongodb后值，包含 _id
+            console.log("进行注册");
             user = result.ops[0];
             //删除密码这种敏感信息，将信息存入session
             delete user.password;
