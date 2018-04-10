@@ -67,6 +67,8 @@ router.post('/',function(req,res,next){
         avatar: avatar
     }
 
+
+
     //用户信息写入数据库
     UserModel.create(user)
         .then(function(result){
@@ -79,6 +81,16 @@ router.post('/',function(req,res,next){
             req.flash('success','注册成功');
             //跳转到首页
             res.redirect('/posts');
+        })
+        .catch(function(e){
+            //注册失败，异步删除上传的头像
+            fs.unlink(req.files.avatar.path);
+            //用户名被占用则跳回到注册页，而不是错误页
+            if(e.message.match('duplicate key')){
+                req.flash('error','用户已被占用');
+                return res.redirect('/signup');
+            }
+            next(e);
         })
 });
 
