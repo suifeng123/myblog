@@ -88,7 +88,11 @@ router.post('/',checkNotLogin,function(req,res,next){
             //此user是插入mongodb后值，包含 _id
             console.log("sing8888");
             console.log(result);
-            user = result.ops[0];
+            try {
+                user = result.ops[0];
+            }catch(e){
+                console.log(e);
+            }
             //删除密码这种敏感信息，将信息存入session
             delete user.password;
             req.session.user = user;

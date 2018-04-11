@@ -2,7 +2,6 @@
  * Created by Administrator on 2018/3/30.
  */
 /*
-在这个项目中采用了MVC中的(模型(model)--视图(view)--控制器(controller/route))
  */
 
 var path = require('path');
