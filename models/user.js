@@ -45,6 +45,8 @@ User.prototype.save = function(callback){
 //读取用户的信息
 User.get = function(name,callback){
     //打开数据库
+    console.log("寻找name");
+    console.log(name);
     mongodb.open(function(err,db){
         if(err){
             return callback(err);//返回错误，返回err信息
@@ -59,6 +61,7 @@ User.get = function(name,callback){
             collection.findOne({
                 name: name
             },function(err,user){
+                console.log("进行了数据库的查询")
                 mongodb.close();
                 if(err){
                     return callback(err);//失败  返回err信息

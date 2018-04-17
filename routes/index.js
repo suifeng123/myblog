@@ -3,16 +3,25 @@ module.exports = function(app) {
       User = require('../models/user.js');
 
   app.get('/', function (req, res) {
-    res.render('index', { title: '主页' });
+    res.render('index', {
+      title: '主页',
+      user: req.session.user,
+      success: req.flash('success').toString(),
+      error: req.flash('error').toString()
+    });
   });
   app.get('/reg', function (req, res) {
-    res.render('reg', { title: '注册' });
+    res.render('reg', {
+      title: '注册',
+    user: req.session.user,
+      success: req.flash('success').toString(),
+      error: req.flash('error').toString()
+    });
   });
   app.post('/reg', function (req, res) {
-       console.log("展示用户注册");
-       console.log(req);
-        console.log(req.query);
-    console.log(req.body);
+    var crypto = require('crypto'),
+        User = require('../models/user.js');
+    console.log(req.body.name);
       //进行用户注册的信息的写入
       var name = req.body.name;
       var password = req.body.password;
@@ -38,13 +47,18 @@ module.exports = function(app) {
         req.flash('error',err);
         return res.redirect('/');
       }
-
+      console.log("展示要插入的用户");
+      console.log(user);
+      /*
       if(user){
         req.flash('error','用户已存在');
+        console.log("sdfsd");
         return res.redirect('/reg'); //重新返回注册页
       }
+      */
       //如果不在在用户的话，就新增这个用户
       newUser.save(function(err,user){
+        console.log("存储新的");
         if(err){
           req.flash('error',err);
           return res.redirect('/reg');//注册失败，就重新返回注册页
